@@ -1,0 +1,1 @@
+alter table quizzes rename column startDate to start_date
