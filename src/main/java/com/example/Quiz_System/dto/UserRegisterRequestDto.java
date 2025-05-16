@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class UserRequestDto {
+public class UserRegisterRequestDto {
     @NotBlank
     private String username;
     @NotBlank

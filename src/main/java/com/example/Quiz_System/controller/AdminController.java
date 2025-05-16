@@ -1,8 +1,7 @@
 package com.example.Quiz_System.controller;
 
-import com.example.Quiz_System.dto.UserRequestDto;
-import com.example.Quiz_System.repository.UserRepository;
-import com.example.Quiz_System.service.UserService;
+import com.example.Quiz_System.dto.UserRegisterRequestDto;
+import com.example.Quiz_System.service.auth.UserAuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
 
-    private final UserService userService;
+    private final UserAuthService userAuthService;
 
-    public AdminController(UserService userService) {
-        this.userService = userService;
+    public AdminController(UserAuthService userAuthService) {
+        this.userAuthService = userAuthService;
     }
 
 
-    public ResponseEntity<String> createNewAdmin(@RequestBody UserRequestDto userRequestDto){
+    public ResponseEntity<String> createNewAdmin(@RequestBody UserRegisterRequestDto userRegisterRequestDto){
 
-        return userService.createAdmin(userRequestDto);
+        return userAuthService.createAdmin(userRegisterRequestDto);
     }
 }

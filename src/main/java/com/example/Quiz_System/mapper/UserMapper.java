@@ -1,6 +1,6 @@
 package com.example.Quiz_System.mapper;
 
-import com.example.Quiz_System.dto.UserRequestDto;
+import com.example.Quiz_System.dto.UserRegisterRequestDto;
 import com.example.Quiz_System.entity.user.Admin;
 import com.example.Quiz_System.entity.user.QuizCreator;
 import com.example.Quiz_System.entity.user.QuizTaker;
@@ -20,7 +20,7 @@ public interface UserMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "password", ignore = true)
-    QuizTaker toQuizTaker(UserRequestDto userRequestDto);
+    QuizTaker toQuizTaker(UserRegisterRequestDto userRegisterRequestDto);
 
     @AfterMapping
     default void enhanceQuizTaker(@MappingTarget QuizTaker quizTaker) {
@@ -32,7 +32,7 @@ public interface UserMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "password", ignore = true)
-    Admin toAdmin(UserRequestDto userRequestDto);
+    Admin toAdmin(UserRegisterRequestDto userRegisterRequestDto);
 
     @AfterMapping
     default void enhanceAdmin(@MappingTarget Admin admin) {
@@ -45,7 +45,7 @@ public interface UserMapper {
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "quizzes", ignore = true)
-    QuizCreator toQuizCreator(UserRequestDto userRequestDto);
+    QuizCreator toQuizCreator(UserRegisterRequestDto userRegisterRequestDto);
 
     @AfterMapping
     default void enhanceQuizCreator(@MappingTarget QuizCreator quizCreator){
