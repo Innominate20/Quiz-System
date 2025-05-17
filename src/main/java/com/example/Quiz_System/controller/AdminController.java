@@ -18,8 +18,4 @@ public class AdminController {
     }
 
 
-    public ResponseEntity<String> createNewAdmin(@RequestBody UserRegisterRequestDto userRegisterRequestDto){
-
-        return userAuthService.createAdmin(userRegisterRequestDto);
-    }
 }

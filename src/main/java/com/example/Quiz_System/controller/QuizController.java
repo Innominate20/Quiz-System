@@ -30,9 +30,9 @@ public class QuizController {
     }
 
     @GetMapping("/quizzes/{quizName}")
-    public ResponseEntity<?> getQuiz(@PathVariable("quizName") String name){
+    public ResponseEntity<?> getQuiz(@PathVariable("quizName") String quizName){
 
-        return quizService.getQuiz(name);
+        return quizService.takeQuiz(quizName);
     }
 
     @PostMapping("/quizzes/{quizName}/results")
