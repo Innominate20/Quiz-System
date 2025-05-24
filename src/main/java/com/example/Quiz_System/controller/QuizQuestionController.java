@@ -20,10 +20,10 @@ public class QuizQuestionController {
         this.quizQuestionService = quizQuestionService;
     }
 
-    @PostMapping("/quiz-questions/{quizName}")
-    public ResponseEntity<?> createNewQuizQuestions(@PathVariable("quizName") String quizName, @Valid @RequestBody List<QuizQuestionDto> quizQuestionDtoList){
+    @PostMapping("/quiz-questions/{quizName}/{id}")
+    public ResponseEntity<?> createNewQuizQuestions(@PathVariable("quizName") String quizName, @Valid @RequestBody List<QuizQuestionDto> quizQuestionDtoList, @PathVariable("id") long quizId){
 
-        return quizQuestionService.createQuizQuestions(quizQuestionDtoList, quizName);
+        return quizQuestionService.addQuestionsToQuiz(quizQuestionDtoList, quizName, quizId);
     }
 
 }

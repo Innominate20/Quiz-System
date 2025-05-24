@@ -2,6 +2,7 @@ package com.example.Quiz_System.service;
 
 import com.example.Quiz_System.dto.CreateQuizDto;
 import com.example.Quiz_System.dto.QuizResultDto;
+import com.example.Quiz_System.dto.QuizReviewDto;
 import com.example.Quiz_System.entity.Quiz;
 import com.example.Quiz_System.entity.QuizResult;
 import com.example.Quiz_System.entity.user.QuizCreator;
@@ -16,6 +17,7 @@ import com.example.Quiz_System.repository.QuizRepository;
 import com.example.Quiz_System.repository.QuizResultRepository;
 import com.example.Quiz_System.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,11 +65,30 @@ public class QuizService {
         return ResponseEntity.status(HttpStatus.CREATED).body("Quiz created !");
     }
 
+    public ResponseEntity<List<QuizReviewDto>> reviewQuizzes(String quizName){
+
+        var quizList = quizRepository.findByquizNameIgnoreCase(quizName);
+
+        if(quizList.isEmpty()){
+            throw new QuizNotFoundException("Quiz with the name \""+ quizName+"\" is not found !");
+        }
+
+        var quizResponse = quizList.stream()
+                .map(quiz -> {
+                    var quizReviewObj = quizMapper.toQuizReviewDto(quiz);
+                    quizReviewObj.setQuizOwner(quiz.getQuizCreator().getUsername());
+                    return quizReviewObj;
+                })
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(quizResponse);
+    }
 
 
-    public ResponseEntity<?> takeQuiz(String name){
+    public ResponseEntity<?> takeQuiz(String quizName, long quizId){
 
-        var quiz = quizRepository.findByquizNameIgnoreCase(name).orElseThrow(() -> new QuizNotFoundException("Quiz with the name \""+ name+"\" is not found !"));
+        var quiz = quizRepository.findByquizNameIgnoreCaseAndId(quizName, quizId).orElseThrow(() -> new QuizNotFoundException("Invalid quiz name or id !"));
+
 
         var questioList = quiz.getQuizQuestions();
 
@@ -77,11 +98,12 @@ public class QuizService {
 
         double duration  = quiz.getDuration();
         var startDate = quiz.getStartDate();
-        var deadLine = quiz.getDeadline();
+        var expiration = quiz.getExpiration();
 
         Map<String, Object> quizResponse = new HashMap<>();
 
-        quizResponse.put("DeadLine", deadLine);
+        quizResponse.put("QuizName", quizName);
+        quizResponse.put("DeadLine", expiration);
         quizResponse.put("TimeLimit", duration);
         quizResponse.put("StartDate", startDate);
         quizResponse.put("Questions", quizQuestionsList);
@@ -89,14 +111,15 @@ public class QuizService {
         return ResponseEntity.status(HttpStatus.OK).body(quizResponse);
     }
 
-    public ResponseEntity<?> saveQuizResults(List<QuizResultDto> quizResultDtos, String quizName){
+    @Transactional
+    public ResponseEntity<?> saveQuizResults(List<QuizResultDto> quizResultDtos, String quizName, long id){
 
         var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         var quizTaker = (QuizTaker) userRepository.findByEmail(userEmail).orElseThrow(() -> new UserNotFoundException("User with the email \""+userEmail+"\" is not found !"));
 
         var quizTakerId = quizTaker.getId();
 
-        var optionalQuizResult = quizResultRepository.findByQuizTakerAndQuizTaker(quizTakerId, quizName);
+        var optionalQuizResult = quizResultRepository.findByQuizTakerAndQuizNameIgnoreCase(quizTaker, quizName);
 
         if (optionalQuizResult.isPresent()){
 
@@ -104,7 +127,7 @@ public class QuizService {
         }
 
         int mark = 0;
-        Quiz quiz = quizRepository.findByquizNameIgnoreCase(quizName).orElseThrow(() -> new QuizNotFoundException("Quiz withe the name: \""+quizName+"\" does not exist !"));
+        Quiz quiz = quizRepository.findByquizNameIgnoreCaseAndId(quizName, id).orElseThrow(() -> new QuizNotFoundException("Quiz withe the name: \""+quizName+"\" does not exist !"));
 
         var quizQuestions = quiz.getQuizQuestions();
 
@@ -119,8 +142,8 @@ public class QuizService {
 
         for (int counter=0;counter<numberOfAnsweredQuestions;counter++){
 
-            var id = quizResultDtos.get(counter).getId();
-            var questionToCheckId = quizQuestionIdentifier.get(id);
+            var resultId = quizResultDtos.get(counter).getId();
+            var questionToCheckId = quizQuestionIdentifier.get(resultId);
             var questionToCheck = quizQuestions.get(questionToCheckId);
 
             if (quizResultDtos.get(counter).getCorrectAnswer() == questionToCheck.getCorrectAnswer()){
@@ -149,7 +172,7 @@ public class QuizService {
     @Transactional
     public void deleteExpiredQuizzes(){
 
-        long countedDeleted = quizRepository.deleteBydeadlineBefore(LocalDate.now());
+        long countedDeleted = quizRepository.deleteByexpirationBefore(LocalDate.now());
         log.info("{} quizzes deleted !",countedDeleted);
     }
 
