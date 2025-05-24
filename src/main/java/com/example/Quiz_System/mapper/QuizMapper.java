@@ -1,6 +1,7 @@
 package com.example.Quiz_System.mapper;
 
 import com.example.Quiz_System.dto.CreateQuizDto;
+import com.example.Quiz_System.dto.QuizReviewDto;
 import com.example.Quiz_System.entity.Quiz;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -24,4 +25,9 @@ public interface QuizMapper {
         quiz.setQuizQuestions(new ArrayList<>());
         quiz.setCreatedAt(LocalDate.now());
     }
+
+    @Mapping(target = "quizOwner", ignore = true)
+    QuizReviewDto toQuizReviewDto(Quiz quiz);
+
+
 }

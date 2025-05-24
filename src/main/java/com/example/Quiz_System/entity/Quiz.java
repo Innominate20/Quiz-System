@@ -20,7 +20,7 @@ public class Quiz {
     private long id;
     @Column(name = "quiz_name")
     private String quizName;
-    private LocalDateTime deadline;
+    private LocalDateTime expiration;
     private double duration;
     @Column(name = "start_date")
     private LocalDateTime startDate;

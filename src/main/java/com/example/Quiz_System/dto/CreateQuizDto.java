@@ -13,7 +13,7 @@ public class CreateQuizDto {
     @NotNull
     private LocalDateTime startDate;
     @NotNull
-    private LocalDateTime deadline;
+    private LocalDateTime expiration;
     @NotNull
     private double duration;
     @NotBlank
