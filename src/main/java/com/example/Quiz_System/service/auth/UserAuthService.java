@@ -81,7 +81,7 @@ public class UserAuthService {
 
         userRepository.save(quizCreator);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("QuizCreator created !");
+        return ResponseEntity.status(HttpStatus.CREATED).body("QuizCreator registered !");
     }
 
     public ResponseEntity<String> loginUser(UserLoginDto userLoginDto){
