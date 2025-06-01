@@ -30,6 +30,12 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        if (isPublicRoute(path)){
+            filterChain.doFilter(request,response);
+        }
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
@@ -71,5 +77,13 @@ public class JwtFilter extends OncePerRequestFilter {
                 response.getWriter().write("{\"error\": \"Invalid token\"}");
 
         }
+    }
+
+    private boolean isPublicRoute(String path){
+
+        if (path.startsWith("/api/v1/user/auth/") || path.startsWith("/api/v1/admin/auth/login")){
+            return true;
+        }
+        return false;
     }
 }

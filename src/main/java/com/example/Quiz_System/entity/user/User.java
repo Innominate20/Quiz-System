@@ -1,8 +1,8 @@
 package com.example.Quiz_System.entity.user;
 
 import com.example.Quiz_System.enums.Role;
-import com.example.Quiz_System.enums.Status;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +21,5 @@ public abstract class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @Enumerated(EnumType.STRING)
-    private Status status;
+
 }

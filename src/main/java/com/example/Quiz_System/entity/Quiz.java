@@ -2,8 +2,7 @@ package com.example.Quiz_System.entity;
 
 import com.example.Quiz_System.entity.user.QuizCreator;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +12,7 @@ import java.util.List;
 @Table(name = "quizzes")
 @Getter
 @Setter
+@Builder
 public class Quiz {
 
     @Id

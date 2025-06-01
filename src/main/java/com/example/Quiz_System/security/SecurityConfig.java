@@ -40,8 +40,8 @@ public class SecurityConfig {
                         config
                                 .requestMatchers("/api/v1/user/auth/**", "/api/v1/admin/auth/login").permitAll()
                                 .requestMatchers("/api/v1/admin/auth/register").hasRole("ADMIN")
-                                .requestMatchers("/api/v1/quiz-question/**").hasRole("QuizCreator")
-                                .requestMatchers("/api/v1/quiz/quizzes/{quizName}/{id}").hasRole("QuizTaker")
+                                .requestMatchers("/api/v1/quiz-question/**", "/api/v1/quiz/quizzes/me/{quizName}/review").hasRole("QuizCreator")
+                                .requestMatchers("/api/v1/quiz/quizzes/review","/api/v1/quiz/quizzes/{quizName}/{id}", "/api/v1/quiz/quizzes/me/result/review").hasRole("QuizTaker")
                                 .anyRequest().authenticated()
                 );
 

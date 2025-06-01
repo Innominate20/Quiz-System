@@ -1,6 +1,7 @@
 package com.example.Quiz_System.entity.user;
 
 import com.example.Quiz_System.entity.QuizResult;
+import com.example.Quiz_System.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,6 @@ public class QuizTaker extends User{
     @Access(AccessType.FIELD)
     @OneToMany(mappedBy = "quizTaker")
     private List<QuizResult> quizResults;
+
+
 }

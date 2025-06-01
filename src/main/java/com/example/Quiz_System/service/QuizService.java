@@ -17,18 +17,16 @@ import com.example.Quiz_System.repository.QuizRepository;
 import com.example.Quiz_System.repository.QuizResultRepository;
 import com.example.Quiz_System.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -65,7 +63,11 @@ public class QuizService {
         return ResponseEntity.status(HttpStatus.CREATED).body("Quiz created !");
     }
 
-    public ResponseEntity<List<QuizReviewDto>> reviewQuizzes(String quizName){
+    public ResponseEntity<List<QuizReviewDto>> reviewMyQuizzes(String quizName){
+
+        var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        var userId = userRepository.findByEmail(userEmail).get().getId();
 
         var quizList = quizRepository.findByquizNameIgnoreCase(quizName);
 
@@ -74,6 +76,7 @@ public class QuizService {
         }
 
         var quizResponse = quizList.stream()
+                .filter(quiz -> quiz.getQuizCreator().getId() == userId)
                 .map(quiz -> {
                     var quizReviewObj = quizMapper.toQuizReviewDto(quiz);
                     quizReviewObj.setQuizOwner(quiz.getQuizCreator().getUsername());
@@ -82,6 +85,36 @@ public class QuizService {
                 .toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(quizResponse);
+    }
+
+    public ResponseEntity<Page<QuizReviewDto>> reviewAllQuizzes(int page, int size, String quizName, String sortBy){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+
+        var pagedQuizzes = quizRepository.findQuizzes(pageable, quizName);
+
+        if (pagedQuizzes.isEmpty()){
+
+            throw new QuizNotFoundException("No quizzes found !");
+        }
+
+        List<QuizReviewDto> filteredList = pagedQuizzes.getContent().stream()
+                .filter(quiz -> !quiz.getQuizQuestions().isEmpty())
+                .map(quizMapper::toQuizReviewDto)
+                .toList();
+
+        if (filteredList.isEmpty()){
+
+            throw new QuizNotFoundException("No quizzes found !");
+        }
+
+        Page<QuizReviewDto> result = new PageImpl<>(
+                filteredList,
+                pagedQuizzes.getPageable(),
+                filteredList.size()
+        );
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
 

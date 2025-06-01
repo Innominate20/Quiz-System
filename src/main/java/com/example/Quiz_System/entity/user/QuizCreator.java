@@ -2,6 +2,7 @@ package com.example.Quiz_System.entity.user;
 
 import com.example.Quiz_System.entity.Quiz;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

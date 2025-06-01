@@ -61,4 +61,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
+    @ExceptionHandler(QuizResultNotFoundException.class)
+    public ResponseEntity<String> handleQuizResultNotFoundException(QuizResultNotFoundException ex){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
