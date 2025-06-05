@@ -1,6 +1,7 @@
 package com.example.Quiz_System.controller;
 
 import com.example.Quiz_System.dto.QuizQuestionDto;
+import com.example.Quiz_System.dto.UpdateQuestionDto;
 import com.example.Quiz_System.entity.QuizQuestion;
 import com.example.Quiz_System.service.QuizQuestionService;
 import com.example.Quiz_System.service.QuizService;
@@ -25,5 +26,12 @@ public class QuizQuestionController {
 
         return quizQuestionService.addQuestionsToQuiz(quizQuestionDtoList, quizName, quizId);
     }
+
+    @PostMapping("/quiz-questions/{quizName}/{id}/update")
+    public ResponseEntity<?> updateQuizQuestions(@PathVariable("quizName") String quizName, @Valid @RequestBody List<UpdateQuestionDto> updateQuestionDtos, @PathVariable("id") long quizId){
+
+        return quizQuestionService.updateQuizQuestions(quizName, quizId, updateQuestionDtos);
+    }
+
 
 }

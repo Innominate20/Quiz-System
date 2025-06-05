@@ -18,6 +18,7 @@ import com.example.Quiz_System.repository.QuizResultRepository;
 import com.example.Quiz_System.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

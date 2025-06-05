@@ -67,4 +67,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(QuizQuestionNotFoundException.class)
+    public ResponseEntity<String> handleQuizQuestionNotFoundException(QuizQuestionNotFoundException ex){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

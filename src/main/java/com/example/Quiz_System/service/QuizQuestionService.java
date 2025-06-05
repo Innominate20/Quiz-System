@@ -1,20 +1,27 @@
 package com.example.Quiz_System.service;
 
 import com.example.Quiz_System.dto.QuizQuestionDto;
+import com.example.Quiz_System.dto.UpdateQuestionDto;
+import com.example.Quiz_System.entity.QuizQuestion;
 import com.example.Quiz_System.entity.user.QuizCreator;
 import com.example.Quiz_System.exception.QuizNotFoundException;
 import com.example.Quiz_System.exception.QuizOwnershipException;
+import com.example.Quiz_System.exception.QuizQuestionNotFoundException;
 import com.example.Quiz_System.mapper.QuizQuestionMapper;
 import com.example.Quiz_System.repository.QuizQuestionRepository;
 import com.example.Quiz_System.repository.QuizRepository;
 import com.example.Quiz_System.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.aspectj.weaver.patterns.TypePatternQuestions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class QuizQuestionService {
@@ -29,6 +36,43 @@ public class QuizQuestionService {
         this.quizQuestionMapper = quizQuestionMapper;
         this.quizQuestionRepository = quizQuestionRepository;
         this.userRepository = userRepository;
+    }
+
+    @Transactional
+    public ResponseEntity<String> updateQuizQuestions(String quizName, long id, List<UpdateQuestionDto> updateQuestionDtos){
+
+        var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        var quiz = quizRepository.findByquizNameIgnoreCaseAndId(quizName, id)
+                .orElseThrow(() -> new QuizNotFoundException("Invalid quizName or quizId!"));
+
+        if (!quiz.getQuizCreator().getEmail().equals(userEmail)){
+
+            throw new QuizOwnershipException("You are not the owner of the quiz !");
+        }
+
+        var questions = quiz.getQuizQuestions();
+
+        if (questions.isEmpty()) {
+            throw new QuizQuestionNotFoundException("Invalid question ids or questions are not added!");
+        }
+
+        Map<Long, QuizQuestion> questionMap = questions.stream()
+                .collect(Collectors.toMap(QuizQuestion::getId, Function.identity()));
+
+        for (var updateDto : updateQuestionDtos) {
+
+            var question = questionMap.get(updateDto.getId());
+
+            if (question != null) {
+                quizQuestionMapper.updateQuestionFromDto(updateDto, question);
+            }
+        }
+
+        quizQuestionRepository.saveAll(questions);
+
+        return ResponseEntity.ok("Questions updated successfully.");
+
     }
 
     @Transactional
